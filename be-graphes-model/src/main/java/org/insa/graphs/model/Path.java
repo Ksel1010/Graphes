@@ -28,15 +28,42 @@ public class Path {
      * @return A path that goes through the given list of nodes.
      * 
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
-     *         consecutive nodes in the list are not connected in the graph.
+     *                                  consecutive nodes in the list are not
+     *                                  connected in the graph.
      * 
      * @deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
-        List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
-        return new Path(graph, arcs);
+            List<Arc> arcs = new ArrayList<Arc>();
+            List<Arc> successors = new ArrayList<Arc>();
+
+            if (nodes.size() == 1){
+                return new Path(graph,nodes.get(0));
+            } 
+            for (int i=0; i<nodes.size()-1; i++){
+                successors=nodes.get(i).getSuccessors();
+                if (successors.isEmpty() ){throw (new IllegalArgumentException());}
+                Node destination=nodes.get(i+1);
+                List<Arc> arcsChemin=new ArrayList<>();
+                for (Arc arc: successors){
+                    if (arc.getDestination().equals(destination)){
+                        arcsChemin.add(arc);
+                    }
+                }
+                if (arcsChemin.isEmpty() ){throw (new IllegalArgumentException());}
+                double timeMin = arcsChemin.get(0).getMinimumTravelTime();
+                Arc arcMin = arcsChemin.get(0);
+                for (Arc arc : arcsChemin){
+                    if (arc.getMinimumTravelTime()<timeMin){
+                        timeMin = arc.getMinimumTravelTime();
+                        arcMin = arc;
+                    }
+                }
+                arcs.add(arcMin);
+            }
+            
+            return new Path(graph, arcs);
     }
 
     /**
@@ -49,15 +76,43 @@ public class Path {
      * @return A path that goes through the given list of nodes.
      * 
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
-     *         consecutive nodes in the list are not connected in the graph.
+     *                                  consecutive nodes in the list are not
+     *                                  connected in the graph.
      * 
-     * @deprecated Need to be implemented.
+     * 
      */
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
-        List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
-        return new Path(graph, arcs);
+
+            List<Arc> arcs = new ArrayList<Arc>();
+            List<Arc> successors = new ArrayList<Arc>();
+
+            if (nodes.size() == 1){
+                return new Path(graph,nodes.get(0));
+            } 
+            for (int i=0; i<nodes.size()-1; i++){
+                successors=nodes.get(i).getSuccessors();
+                if (successors.isEmpty() ){throw (new IllegalArgumentException());}
+                Node destination=nodes.get(i+1);
+                List<Arc> arcsChemin=new ArrayList<>();
+                for (Arc arc: successors){
+                    if (arc.getDestination().equals(destination)){
+                        arcsChemin.add(arc);
+                    }
+                }
+                if (arcsChemin.isEmpty() ){throw (new IllegalArgumentException());}
+                float lengthMin = arcsChemin.get(0).getLength();
+                Arc arcMin = arcsChemin.get(0);
+                for (Arc arc : arcsChemin){
+                    if (arc.getLength()<lengthMin){
+                        lengthMin = arc.getLength();
+                        arcMin = arc;
+                    }
+                }
+                arcs.add(arcMin);
+            }
+            
+            return new Path(graph, arcs);
     }
 
     /**
@@ -68,8 +123,9 @@ public class Path {
      * @return Concatenated path.
      * 
      * @throws IllegalArgumentException if the paths cannot be concatenated (IDs of
-     *         map do not match, or the end of a path is not the beginning of the
-     *         next).
+     *                                  map do not match, or the end of a path is
+     *                                  not the beginning of the
+     *                                  next).
      */
     public static Path concatenate(Path... paths) throws IllegalArgumentException {
         if (paths.length == 0) {
@@ -83,7 +139,7 @@ public class Path {
             }
         }
         ArrayList<Arc> arcs = new ArrayList<>();
-        for (Path path: paths) {
+        for (Path path : paths) {
             arcs.addAll(path.getArcs());
         }
         Path path = new Path(paths[0].getGraph(), arcs);
@@ -118,7 +174,7 @@ public class Path {
      * Create a new path containing a single node.
      * 
      * @param graph Graph containing the path.
-     * @param node Single node of the path.
+     * @param node  Single node of the path.
      */
     public Path(Graph graph, Node node) {
         this.graph = graph;
@@ -130,7 +186,7 @@ public class Path {
      * Create a new path with the given list of arcs.
      * 
      * @param graph Graph containing the path.
-     * @param arcs Arcs to construct the path.
+     * @param arcs  Arcs to construct the path.
      */
     public Path(Graph graph, List<Arc> arcs) {
         this.graph = graph;
@@ -198,11 +254,25 @@ public class Path {
      * 
      * @return true if the path is valid, false otherwise.
      * 
-     * @deprecated Need to be implemented.
+     * 
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+
+        boolean valide = false;
+        if (this.isEmpty())
+            {valide=true;}
+        else {if (this.size()==1)
+                {valide=true;}
+            else {
+                boolean valide_bis = true;
+                Node origine = this.origin;
+                for (Arc arc : this.arcs) {
+                    if (origine != arc.getOrigin()) {valide_bis = false;}
+                    origine = arc.getDestination();
+                }  
+                valide = valide || valide_bis;      
+        }}
+        return valide;
     }
 
     /**
@@ -210,11 +280,14 @@ public class Path {
      * 
      * @return Total length of the path (in meters).
      * 
-     * @deprecated Need to be implemented.
+     * 
      */
     public float getLength() {
-        // TODO:
-        return 0;
+        float length = 0;
+        for (Arc arc : this.arcs) {
+            length += arc.getLength();
+        }
+        return length;
     }
 
     /**
@@ -225,11 +298,14 @@ public class Path {
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
      * 
-     * @deprecated Need to be implemented.
+     * 
      */
     public double getTravelTime(double speed) {
-        // TODO:
-        return 0;
+        float time = 0;
+        for (Arc arc : this.arcs) {
+            time += arc.getTravelTime(speed);
+        }
+        return time;
     }
 
     /**
@@ -238,11 +314,14 @@ public class Path {
      * 
      * @return Minimum travel time to travel this path (in seconds).
      * 
-     * @deprecated Need to be implemented.
+     * 
      */
     public double getMinimumTravelTime() {
-        // TODO:
-        return 0;
+        float time = 0;
+        for (Arc arc : this.arcs) {
+            time += arc.getMinimumTravelTime();
+        }
+        return time;
     }
 
 }
