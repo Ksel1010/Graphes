@@ -50,6 +50,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             if (!node.equals(origine)){
 
                 labels.put(node.getId(), new Label(node));
+                labels.get(node.getId()).setCoutRealise(Double.MAX_VALUE);
 
             }
         }
@@ -73,7 +74,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
 
                 if (!y.isMarque()){
-                    if (y.getCoutRealise()<0  ||  y.getCoutRealise()>data.getCost(arc)+x.getCoutRealise()){
+                    if (y.getCoutRealise()>data.getCost(arc)+x.getCoutRealise()){
                         y.setCoutRealise(data.getCost(arc)+x.getCoutRealise());
                         y.setPere(arc);
                     }
