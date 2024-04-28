@@ -144,6 +144,11 @@ public final class Node { //implements Comparable<Node> {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "Node [id=" + id + "]";
+    }
+
     // Do we really need to compare nodes ? Confusion with Label comparisons.
     /**
      * Compare the ID of this node with the ID of the given node.

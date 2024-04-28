@@ -32,7 +32,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
     @Override
     protected ShortestPathSolution doRun() {
-        System.out.println("début run");
         final ShortestPathData data = getInputData();
         ShortestPathSolution solution = null;
         
@@ -40,14 +39,12 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
         Node origine = data.getOrigin();
 
-        System.out.println("40");
 
 
         HashMap <Integer, Label> labels=new HashMap<>();
         labels.put(origine.getId(), new Label(origine));
         labels.get(origine.getId()).setCoutRealise(0);
   
-        System.out.println("48");
 
         for (Node node: graph.getNodes()){
             if (!node.equals(origine)){
@@ -56,14 +53,13 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
             }
         }
-        System.out.println("57");
 
         BinaryHeap<Label> tas = new BinaryHeap<Label>();
         tas.insert(labels.get(origine.getId()));
-        System.out.println("61");
 
+        
         while(!labels.get(data.getDestination().getId()).isMarque() && !tas.isEmpty()) {
-            Label x = tas.findMin();
+            Label x = tas.deleteMin();
             x.setMarque(true);
 
             for (Arc arc : x.getSommetCourant().getSuccessors()){
@@ -74,13 +70,12 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
                 Node noeud = arc.getDestination();
                 Label y = labels.get(noeud.getId());
-                System.out.println("dans le for");
 
 
                 if (!y.isMarque()){
-                    if (y.getCoutRealise()>data.getCost(arc)+x.getCoutRealise()){
+                    if (y.getCoutRealise()<0  ||  y.getCoutRealise()>data.getCost(arc)+x.getCoutRealise()){
                         y.setCoutRealise(data.getCost(arc)+x.getCoutRealise());
-                        
+                        y.setPere(arc);
                     }
                     try {
                         tas.remove(y);
@@ -88,11 +83,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                         // TODO: handle exception
                     }
                     tas.insert(y);
-                    y.setPere(arc);
+                    
                 }
             }
         }
-        System.out.println("84");
 
 
         // Destination has no predecessor, the solution is infeasible...
