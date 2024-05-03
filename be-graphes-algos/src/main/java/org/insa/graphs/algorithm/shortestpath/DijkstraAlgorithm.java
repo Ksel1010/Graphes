@@ -63,6 +63,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             Label x = tas.deleteMin();
             x.setMarque(true);
 
+            notifyNodeMarked(x.getSommetCourant());
+
             for (Arc arc : x.getSommetCourant().getSuccessors()){
                 // Small test to check allowed roads...
                 if (!data.isAllowed(arc)) {
@@ -72,10 +74,14 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                 Node noeud = arc.getDestination();
                 Label y = labels.get(noeud.getId());
 
+                if (Double.isInfinite(y.getCoutRealise())) {
+                    notifyNodeReached(noeud);
+                }
 
                 if (!y.isMarque()){
-                    if (y.getCoutRealise()>data.getCost(arc)+x.getCoutRealise()){
-                        y.setCoutRealise(data.getCost(arc)+x.getCoutRealise());
+                    double cout = data.getCost(arc)+x.getCoutRealise();
+                    if (y.getCoutRealise()>cout){
+                        y.setCoutRealise(cout);
                         y.setPere(arc);
                     }
                     try {
@@ -87,32 +93,42 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                     
                 }
             }
+
+            if (x.getSommetCourant().getId()==data.getOrigin().getId()){
+                notifyOriginProcessed(origine);
+            }
+
         }
 
 
         // Destination has no predecessor, the solution is infeasible...
-        try {
+        /*try {
             tas.remove(labels.get(data.getDestination().getId()));
             tas.insert(labels.get(data.getDestination().getId()));
-        } catch (Exception e) {
+        } catch (ElementNotFoundException e) {
             solution = new ShortestPathSolution(data, Status.INFEASIBLE);
-        }
-        
-        ArrayList<Arc> arcs = new ArrayList<>();
-        Label x = labels.get(data.getDestination().getId());
-        while(!x.getSommetCourant().equals(origine)){
-            arcs.add(x.getPere());
-            x = labels.get(x.getPere().getOrigin().getId());
-        }
-
-        // The destination has been found, notify the observers.
-        notifyDestinationReached(data.getDestination());        
-
-
-        Collections.reverse(arcs);        // Create the final solution.
-        solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
+        }*/
         
 
+        if (labels.get(data.getDestination().getId()).getPere()==null) {
+            solution = new ShortestPathSolution(data, Status.INFEASIBLE);
+        } else {
+
+            notifyDestinationReached(data.getDestination());
+            ArrayList<Arc> arcs = new ArrayList<>();
+            Label x = labels.get(data.getDestination().getId());
+            while(!x.getSommetCourant().equals(origine)){
+                arcs.add(x.getPere());
+                x = labels.get(x.getPere().getOrigin().getId());
+            }
+
+            // The destination has been found, notify the observers.
+            notifyDestinationReached(data.getDestination());        
+
+            Collections.reverse(arcs);        // Create the final solution.
+            solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(graph, arcs));
+        
+        }
 
         return solution;
     }

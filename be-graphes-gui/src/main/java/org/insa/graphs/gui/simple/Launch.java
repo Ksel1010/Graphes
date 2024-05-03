@@ -5,18 +5,29 @@ import java.awt.Dimension;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.insa.graphs.algorithm.ArcInspector;
 import org.insa.graphs.gui.drawing.Drawing;
 import org.insa.graphs.gui.drawing.components.BasicDrawing;
 import org.insa.graphs.model.Graph;
+import org.insa.graphs.model.Node;
 import org.insa.graphs.model.Path;
 import org.insa.graphs.model.io.BinaryGraphReader;
 import org.insa.graphs.model.io.BinaryPathReader;
 import org.insa.graphs.model.io.GraphReader;
 import org.insa.graphs.model.io.PathReader;
+
+import org.insa.graphs.algorithm.ArcInspectorFactory;
+import org.insa.graphs.algorithm.shortestpath.BellmanFordAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
+import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
+import org.insa.graphs.algorithm.shortestpath.ShortestPathSolution;
 
 public class Launch {
 
@@ -45,7 +56,7 @@ public class Launch {
     }
 
     public static void main(String[] args) throws Exception {
-
+/*
         // Visit these directory to see the list of available files on Commetud.
         final String mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre.mapgr";
         final String pathName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path";
@@ -72,6 +83,55 @@ public class Launch {
 
         // TODO: Draw the path.
         drawing.drawPath(path);
+
+*/
+
+        /**
+         * Scénario : on part de l'INSA pour bikini
+         */
+        final String mapToulouse = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+        test(mapToulouse);
     }
 
+    public static void test(String map) throws FileNotFoundException, IOException{
+        final GraphReader reader = new BinaryGraphReader(
+            new DataInputStream(new BufferedInputStream(new FileInputStream(map))));
+        final Graph graph = reader.read();
+
+        Node origin = getRandomNode(graph);
+        Node destination = getRandomNode(graph);
+        
+        for (ArcInspector inspector: ArcInspectorFactory.getAllFilters()){
+            ShortestPathData data = new ShortestPathData(graph, origin, destination, inspector);
+            DijkstraAlgorithm djikstra = new DijkstraAlgorithm(data);
+            BellmanFordAlgorithm bellman= new BellmanFordAlgorithm(data);
+
+            ShortestPathSolution pathDij = djikstra.run();
+            ShortestPathSolution pathBel = bellman.run();
+
+            
+            System.out.println("origine: "+ origin.getId());
+            System.out.println("destination: "+ destination.getId());
+
+
+            if (pathBel.getPath()==null && pathDij.getPath()==null){
+                System.out.println("pas de chemin pour les deux");   
+            } else {
+                if (pathBel.getPath()==null || pathDij.getPath()==null){
+                    System.out.println("pas de chemin pour un seul ALERTE");   
+                } else {
+                    if(Math.abs(pathBel.getPath().getLength()-pathDij.getPath().getLength())<0.001){
+                        System.out.println("Même coût");         
+                    }
+                    else{
+                        System.out.println("Les coûts sont différents : dij"+pathDij.getPath().getLength()+" alors que bel: "+pathBel.getPath().getLength());
+                    }
+                }
+            }    
+        }
+    }
+
+    static Node getRandomNode(Graph graph){
+        return graph.getNodes().get(new Random().nextInt(graph.size()));
+    }
 }
