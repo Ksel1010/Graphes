@@ -41,14 +41,24 @@ public class Label implements Comparable<Label>{
     public void setPere(Arc pere) {
         this.pere = pere;
     }
+    public double getTotalCost(){
+        return this.coutRealise;
+    }
 
     @Override
     public int compareTo(Label arg0) {
         /*Si l'un des deux est négatif alors c le plus grand car -1 represente inf */
-        if((this.coutRealise * arg0.getCoutRealise()<0)){
-            return (int) - (this.coutRealise - arg0.getCoutRealise());
+        if(this.coutRealise==Double.MAX_VALUE) {
+            return 1;
         } 
-        return (int) (this.coutRealise - arg0.getCoutRealise());
+        else {
+            if(arg0.getCoutRealise()==Double.MAX_VALUE){
+                return -1;
+            }
+            else{
+                return (int) (this.getTotalCost()-arg0.getTotalCost());
+            }
+        }
     }
 
     

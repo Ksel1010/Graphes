@@ -24,6 +24,7 @@ import org.insa.graphs.model.io.GraphReader;
 import org.insa.graphs.model.io.PathReader;
 
 import org.insa.graphs.algorithm.ArcInspectorFactory;
+import org.insa.graphs.algorithm.shortestpath.AStarAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.BellmanFordAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
@@ -105,26 +106,34 @@ public class Launch {
             ShortestPathData data = new ShortestPathData(graph, origin, destination, inspector);
             DijkstraAlgorithm djikstra = new DijkstraAlgorithm(data);
             BellmanFordAlgorithm bellman= new BellmanFordAlgorithm(data);
+            AStarAlgorithm aStar = new AStarAlgorithm(data);
 
             ShortestPathSolution pathDij = djikstra.run();
             ShortestPathSolution pathBel = bellman.run();
+            ShortestPathSolution pathAstar = aStar.run();
 
             
             System.out.println("origine: "+ origin.getId());
             System.out.println("destination: "+ destination.getId());
+            System.out.println("arc incpector est : "+inspector.toString());
 
-
-            if (pathBel.getPath()==null && pathDij.getPath()==null){
-                System.out.println("pas de chemin pour les deux");   
+            if (pathBel.getPath()==null && pathDij.getPath()==null && pathAstar.getPath()==null){
+                System.out.println("pas de chemin pour les trois algos");   
             } else {
-                if (pathBel.getPath()==null || pathDij.getPath()==null){
-                    System.out.println("pas de chemin pour un seul ALERTE");   
+                if (pathBel.getPath()==null || pathDij.getPath()==null || pathAstar.getPath()==null){
+                    System.out.println("pas de chemin pour au moins un algo ALERTE");   
                 } else {
-                    if(Math.abs(pathBel.getPath().getLength()-pathDij.getPath().getLength())<0.001){
-                        System.out.println("Même coût");         
+                    if(Math.abs(pathBel.getPath().getLength()-pathDij.getPath().getLength())<0.001 && Math.abs(pathAstar.getPath().getLength()-pathDij.getPath().getLength())<0.001){
+                        System.out.println("Même longueur");         
                     }
                     else{
-                        System.out.println("Les coûts sont différents : dij"+pathDij.getPath().getLength()+" alors que bel: "+pathBel.getPath().getLength());
+                        System.out.println("Les coûts sont différents : dij:"+pathDij.getPath().getLength()+" \nalors que bel: "+pathBel.getPath().getLength()+ " \net cout AStar est"+ pathAstar.getPath().getLength());
+                    }
+                    if (Math.abs(pathAstar.getPath().getMinimumTravelTime()-pathDij.getPath().getMinimumTravelTime())<0.01 && Math.abs(pathAstar.getPath().getMinimumTravelTime()-pathBel.getPath().getMinimumTravelTime())<0.001){
+                        System.out.println("même durée pour les 3 algos");
+                    }
+                    else{
+                        System.out.println("durées différentes: dij="+pathDij.getPath().getMinimumTravelTime()+"\nbel:"+pathBel.getPath().getMinimumTravelTime()+"\nAstar:"+pathAstar.getPath().getMinimumTravelTime());
                     }
                 }
             }    

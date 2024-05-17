@@ -30,17 +30,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         return false;
     }*/
 
-    @Override
-    protected ShortestPathSolution doRun() {
-        final ShortestPathData data = getInputData();
-        ShortestPathSolution solution = null;
-        
-        Graph graph = data.getGraph();
-        
-        Node origine = data.getOrigin();
-
-
-
+    public HashMap<Integer,Label> initHashMap(Graph graph,Node origine, Node dest){
         HashMap <Integer, Label> labels=new HashMap<>();
         labels.put(origine.getId(), new Label(origine));
         labels.get(origine.getId()).setCoutRealise(0);
@@ -54,6 +44,20 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
             }
         }
+        return labels;
+    }
+    @Override
+    protected ShortestPathSolution doRun() {
+        final ShortestPathData data = getInputData();
+        ShortestPathSolution solution = null;
+        
+        Graph graph = data.getGraph();
+        
+        Node origine = data.getOrigin();
+
+
+
+        HashMap<Integer, Label> labels=this.initHashMap(graph,origine, data.getDestination());
 
         BinaryHeap<Label> tas = new BinaryHeap<Label>();
         tas.insert(labels.get(origine.getId()));
