@@ -31,6 +31,8 @@ import org.insa.graphs.algorithm.shortestpath.ShortestPathSolution;
 public class Launch {
     public static final String RED = "\033[0;31m";
     public static final String RESET = "\033[0m";
+    public static final String BLUE = "\033[0;34m";
+    public static final String GREEN = "\033[0;32m";
     /**
      * Create a new Drawing inside a JFrame an return it.
      * 
@@ -92,21 +94,25 @@ public class Launch {
         /**
          * Scénario : on part de l'INSA pour bikini
          */
-        final String folderMapsPath = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps";
+        final String folderMapsPath = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
         File folder = new File(folderMapsPath);
-        File[] listMaps = folder.listFiles();
+        //File[] listMaps = folder.listFiles();
+        String[] liste={"toulouse.mapgr","bordeaux.mapgr","paris.mapgr","haute-garonne.mapgr"};
         String map;
-        int i=0;
-        /*while(i<5){
-            map = listMaps[new Random().nextInt(listMaps.length)].getName();
-            if(map.endsWith("mapgr")){
-                System.out.println(map);
+        //int i=0;
+        //while(i<2){
+        for(int i=0;i<liste.length;i++){
+            //map = listMaps[new Random().nextInt(listMaps.length)].getName();
+            map=liste[i];
+            //if(map.endsWith("mapgr")){
+                System.out.println(BLUE+map+RESET);
                 test(folderMapsPath+"/"+map);
-                i++;
-            }
-        }*/
-        final String mapToulouse = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
-        test(mapToulouse);
+        //        i++;
+            //}
+        }
+        //final String mapToulouse = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+        //System.out.println(BLUE+"Toulouse"+RESET);
+        //test(mapToulouse);
     }
 
     public static void test(String map) throws FileNotFoundException, IOException{
@@ -124,8 +130,8 @@ public class Launch {
         for (int i=0;i<5;i++){
             origin = getRandomNode(graph);
             destination = getRandomNode(graph);
-            System.out.println("origine: "+ origin.getId());
-             System.out.println("destination: "+ destination.getId());
+            System.out.println(GREEN+"origine: "+ origin.getId());
+            System.out.println("destination: "+ destination.getId()+RESET);
             for (ArcInspector inspector: ArcInspectorFactory.getAllFilters()){
                 ShortestPathData data = new ShortestPathData(graph, origin, destination, inspector);
                 DijkstraAlgorithm djikstra = new DijkstraAlgorithm(data);
@@ -138,13 +144,13 @@ public class Launch {
 
                 
                 
-                System.out.println("arc incpector est : "+inspector.toString());
+                System.out.println("arc incpector est : "+BLUE+inspector.toString()+RESET);
 
                 if (pathBel.getPath()==null && pathDij.getPath()==null && pathAstar.getPath()==null){
                     System.out.println("pas de chemin pour les trois algos");   
                 } else {
                     if (pathBel.getPath()==null || pathDij.getPath()==null || pathAstar.getPath()==null){
-                        System.out.println("pas de chemin pour au moins un algo ALERTE");   
+                        System.out.println("pas de chemin pour au moins un algo"+RED+" ALERTE"+RESET);   
                     }
                 
                 if (inspector.getMode()==Mode.LENGTH){
@@ -152,7 +158,7 @@ public class Launch {
                         System.out.println("Même longueur");         
                     }
                     else{
-                        System.out.println("Les coûts sont différents : dij:"+pathDij.getPath().getLength()+" \nalors que bel: "+pathBel.getPath().getLength()+ " \net cout AStar est"+ pathAstar.getPath().getLength());
+                        System.out.println(RED+"Les coûts sont différents:"+RESET+ "dij:"+pathDij.getPath().getLength()+" \nalors que bel: "+pathBel.getPath().getLength()+ " \net cout AStar est"+ pathAstar.getPath().getLength());
                         nbEchecCouts++;
                     }
                 }
@@ -162,15 +168,16 @@ public class Launch {
                             System.out.println("même durée pour les 3 algos");
                         }
                         else{
-                            System.out.println("durées différentes: dij="+pathDij.getPath().getMinimumTravelTime()+"\nbel:"+pathBel.getPath().getMinimumTravelTime()+"\nAstar:"+pathAstar.getPath().getMinimumTravelTime());
+                            System.out.println(RED+"durées différentes:"+RESET+ "dij="+pathDij.getPath().getMinimumTravelTime()+"\nbel:"+pathBel.getPath().getMinimumTravelTime()+"\nAstar:"+pathAstar.getPath().getMinimumTravelTime());
                             nbEchecDurées++;
                         }
                     }
                 }
             }
-            System.out.println(RED+ "nombre Echecs couts: "+nbEchecCouts+RESET);
-            System.out.println(RED+ "nombre Echecs durees: "+nbEchecDurées+RESET);
+            
         }
+        System.out.println(RED+ "nombre Echecs couts: "+nbEchecCouts+RESET);
+        System.out.println(RED+ "nombre Echecs durees: "+nbEchecDurées+RESET);
     }
 
     static Node getRandomNode(Graph graph) {

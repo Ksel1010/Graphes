@@ -59,7 +59,7 @@ public class Label implements Comparable<Label>{
                 return (int) (this.getTotalCost()-arg0.getTotalCost());
             }
         }*/
-        return (int) (this.getTotalCost()-arg0.getTotalCost());
+        return (int) (1000*(this.getTotalCost()-arg0.getTotalCost()));
     }
 
     
