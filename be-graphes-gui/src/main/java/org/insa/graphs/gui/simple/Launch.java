@@ -91,28 +91,35 @@ public class Launch {
          * 
          */
 
-        /**
-         * Scénario : on part de l'INSA pour bikini
-         */
-        final String folderMapsPath = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
+        /**  Code pour des cartes aléatoires */
+        
+        /*final String folderMapsPath = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
         File folder = new File(folderMapsPath);
-        //File[] listMaps = folder.listFiles();
+        File[] listMaps = folder.listFiles();
+        String map;
+        int i=0;
+        while(i<5){ //a voir nombre de cartes voulu
+            map = listMaps[new Random().nextInt(listMaps.length)].getName();
+            if(map.endsWith("mapgr")){
+                System.out.println(BLUE+map+RESET);
+                test(folderMapsPath+map);
+                i++;
+            }
+        }
+        */
+
+
+         /** Tests rapides sur petites cartes */
+        
+        final String folderMapsPath = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
         String[] liste={"toulouse.mapgr","bordeaux.mapgr","paris.mapgr","haute-garonne.mapgr"};
         String map;
-        //int i=0;
-        //while(i<2){
         for(int i=0;i<liste.length;i++){
-            //map = listMaps[new Random().nextInt(listMaps.length)].getName();
             map=liste[i];
-            //if(map.endsWith("mapgr")){
-                System.out.println(BLUE+map+RESET);
-                test(folderMapsPath+"/"+map);
-        //        i++;
-            //}
+            System.out.println(BLUE+map+RESET);
+            test(folderMapsPath+map);        
         }
-        //final String mapToulouse = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
-        //System.out.println(BLUE+"Toulouse"+RESET);
-        //test(mapToulouse);
+        
     }
 
     public static void test(String map) throws FileNotFoundException, IOException{
