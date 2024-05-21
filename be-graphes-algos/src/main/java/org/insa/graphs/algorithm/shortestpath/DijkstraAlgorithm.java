@@ -7,7 +7,6 @@ import org.insa.graphs.model.Arc;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 import org.insa.graphs.algorithm.AbstractSolution.Status;
 import org.insa.graphs.algorithm.utils.*;
@@ -30,17 +29,22 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         return false;
     }*/
 
-    public HashMap<Integer,Label> initHashMap(Graph graph,Node origine, Node dest){
-        HashMap <Integer, Label> labels=new HashMap<>();
-        labels.put(origine.getId(), new Label(origine));
-        labels.get(origine.getId()).setCoutRealise(0);
+    public Label[] initArray(ShortestPathData data){
+
+        Node origine = data.getOrigin();
+        Graph graph = data.getGraph();
+        int size = graph.getNodes().size();
+
+        Label[] labels=new Label[size];
+        labels[origine.getId()] = new Label(origine);
+        labels[origine.getId()].setCoutRealise(0);
   
 
         for (Node node: graph.getNodes()){
             if (!node.equals(origine)){
 
-                labels.put(node.getId(), new Label(node));
-                labels.get(node.getId()).setCoutRealise(Double.MAX_VALUE);
+                labels[node.getId()] = new Label(node);
+                labels[node.getId()].setCoutRealise(Double.POSITIVE_INFINITY);
 
             }
         }
@@ -55,15 +59,14 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         
         Node origine = data.getOrigin();
 
-
-
-        HashMap<Integer, Label> labels=this.initHashMap(graph,origine, data.getDestination());
+        Label[] labels=this.initArray(data);
 
         BinaryHeap<Label> tas = new BinaryHeap<Label>();
-        tas.insert(labels.get(origine.getId()));
+        tas.insert(labels[origine.getId()]);
 
-        
-        while(!labels.get(data.getDestination().getId()).isMarque() && !tas.isEmpty()) {
+        notifyOriginProcessed(origine);
+
+        while(!labels[data.getDestination().getId()].isMarque() && !tas.isEmpty()) {
             Label x = tas.deleteMin();
             x.setMarque(true);
 
@@ -76,30 +79,25 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                 }
 
                 Node noeud = arc.getDestination();
-                Label y = labels.get(noeud.getId());
-
-                if (Double.isInfinite(y.getCoutRealise())) {
-                    notifyNodeReached(noeud);
-                }
+                Label y = labels[noeud.getId()];
 
                 if (!y.isMarque()){
                     double cout = data.getCost(arc)+x.getCoutRealise();
-                    if (y.getCoutRealise()>cout){
+
+                    if (Double.isInfinite(y.getCoutRealise()) && Double.isFinite(cout)) {
+                        notifyNodeReached(arc.getDestination());
+                    }
+
+                    if ((y.getCoutRealise()-cout)>0){
                         y.setCoutRealise(cout);
                         y.setPere(arc);
-                    }
-                    try {
-                        tas.remove(y);
-                    } catch (Exception e) {
-                        // TODO: handle exception
-                    }
-                    tas.insert(y);
                     
+                        try {
+                            tas.remove(y);
+                        } catch (Exception e) {/*System.out.println("catch catch");*/}
+                        tas.insert(y);
+                    }
                 }
-            }
-
-            if (x.getSommetCourant().getId()==data.getOrigin().getId()){
-                notifyOriginProcessed(origine);
             }
 
         }
@@ -114,16 +112,16 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }*/
         
 
-        if (labels.get(data.getDestination().getId()).getPere()==null) {
+        if (labels[data.getDestination().getId()].getPere()==null) {
             solution = new ShortestPathSolution(data, Status.INFEASIBLE);
         } else {
 
             notifyDestinationReached(data.getDestination());
             ArrayList<Arc> arcs = new ArrayList<>();
-            Label x = labels.get(data.getDestination().getId());
+            Label x = labels[data.getDestination().getId()];
             while(!x.getSommetCourant().equals(origine)){
                 arcs.add(x.getPere());
-                x = labels.get(x.getPere().getOrigin().getId());
+                x = labels[x.getPere().getOrigin().getId()] ;
             }
 
             // The destination has been found, notify the observers.
