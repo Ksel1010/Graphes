@@ -18,7 +18,7 @@ public class LabelStar extends Label {
             this.coutEstime = Point.distance(this.getSommetCourant().getPoint(), this.destination.getPoint());
         } else {
             if (speed<0){this.speed = 130;} 
-            this.coutEstime = Point.distance(this.getSommetCourant().getPoint(), this.destination.getPoint()) / this.speed;
+            this.coutEstime = Point.distance(this.getSommetCourant().getPoint(), this.destination.getPoint())*3600.0 / (this.speed * 1000.0);
             }    
     }
 
