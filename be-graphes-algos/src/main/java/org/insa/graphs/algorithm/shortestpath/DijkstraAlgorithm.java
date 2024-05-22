@@ -17,18 +17,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         super(data);
     }
 
-/*    final boolean sommetsNonMarques(HashMap labels){
-
-        while (labels.values().iterator().hasNext()) {
-            Label l=(Label)labels.values().iterator().next();
-            System.out.println(l.getSommetCourant().toString());
-            if (!l.isMarque()){
-                return true;
-            }
-        }
-        return false;
-    }*/
-
     public Label[] initArray(ShortestPathData data){
 
         Node origine = data.getOrigin();
@@ -50,6 +38,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         }
         return labels;
     }
+
     @Override
     protected ShortestPathSolution doRun() {
         final ShortestPathData data = getInputData();
@@ -101,16 +90,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
             }
 
         }
-
-
-        // Destination has no predecessor, the solution is infeasible...
-        /*try {
-            tas.remove(labels.get(data.getDestination().getId()));
-            tas.insert(labels.get(data.getDestination().getId()));
-        } catch (ElementNotFoundException e) {
-            solution = new ShortestPathSolution(data, Status.INFEASIBLE);
-        }*/
-        
 
         if (labels[data.getDestination().getId()].getPere()==null) {
             solution = new ShortestPathSolution(data, Status.INFEASIBLE);

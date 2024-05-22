@@ -47,18 +47,7 @@ public class Label implements Comparable<Label>{
 
     @Override
     public int compareTo(Label arg0) {
-        /*Si l'un des deux est négatif alors c le plus grand car -1 represente inf */
-        /*if(this.coutRealise==Double.MAX_VALUE) {
-            return 1;
-        } 
-        else {
-            if(arg0.getCoutRealise()==Double.MAX_VALUE){
-                return -1;
-            }
-            else{
-                return (int) (this.getTotalCost()-arg0.getTotalCost());
-            }
-        }*/
+        
         return Double.compare(this.getTotalCost(), arg0.getTotalCost());
     }
 
