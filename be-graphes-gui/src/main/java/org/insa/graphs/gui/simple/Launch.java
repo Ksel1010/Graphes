@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -58,39 +59,6 @@ public class Launch {
     }
 
     public static void main(String[] args) throws Exception {
-        /*
-         * // Visit these directory to see the list of available files on Commetud.
-         * final String mapName =
-         * "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre.mapgr";
-         * final String pathName =
-         * "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Paths/path_fr31insa_rangueil_r2.path"
-         * ;
-         * 
-         * // Create a graph reader.
-         * final GraphReader reader = new BinaryGraphReader(
-         * new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
-         * 
-         * // TODO: Read the graph.
-         * final Graph graph = reader.read();
-         * 
-         * // Create the drawing:
-         * final Drawing drawing = createDrawing();
-         * 
-         * // TODO: Draw the graph on the drawing.
-         * drawing.drawGraph(graph);
-         * 
-         * // TODO: Create a PathReader.
-         * final PathReader pathReader = new BinaryPathReader(
-         * new DataInputStream(new BufferedInputStream(new FileInputStream(pathName))));
-         * 
-         * // TODO: Read the path.
-         * final Path path = pathReader.readPath(graph);
-         * 
-         * // TODO: Draw the path.
-         * drawing.drawPath(path);
-         * 
-         */
-
         /**  Code pour des cartes aléatoires */
         
         /*final String folderMapsPath = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
@@ -108,9 +76,13 @@ public class Launch {
         }
         */
 
+        /*Tester les durées exec Dij et A star */
+        String carteFrance="/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/france.mapgr";
+        TestDuree(carteFrance);
+
 
          /** Tests rapides sur petites cartes */
-        
+        /*
         final String folderMapsPath = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
         String[] liste={"toulouse.mapgr","bordeaux.mapgr","paris.mapgr","haute-garonne.mapgr"};
         String map;
@@ -119,8 +91,38 @@ public class Launch {
             System.out.println(BLUE+map+RESET);
             test(folderMapsPath+map);        
         }
+        */
         
     }
+
+    /**Test pour les durées de Dij vs Astart */
+
+    public static void TestDuree(String map) throws FileNotFoundException, IOException{
+        final GraphReader reader = new BinaryGraphReader(
+            new DataInputStream(new BufferedInputStream(new FileInputStream(map))));
+        final Graph graph = reader.read();
+
+        Node origin ;
+        Node destination ;
+        origin = getRandomNode(graph);
+        destination = getRandomNode(graph);
+        ShortestPathData data = new  (graph, origin, destination, ArcInspectorFactory.getAllFilters().get(0));
+        DijkstraAlgorithm djikstra = new DijkstraAlgorithm(data);
+        AStarAlgorithm aStar = new AStarAlgorithm(data);
+
+        long timeDij=new Date().getTime();
+        ShortestPathSolution pathDij = djikstra.run();
+        timeDij=new Date().getTime()-timeDij;
+    
+        long timeAStar= new Date().getTime();
+        ShortestPathSolution pathAstar = aStar.run();
+        timeAStar = new Date().getTime()-timeAStar;
+
+        System.out.println(RED+"Les temps d'éxecution sont:");
+        System.out.println("    Dij: "+timeDij/1000+"s, "+(int)(timeDij%1000)+" ms");
+        System.out.println("    A start: "+timeAStar/1000+"s, "+(int)(timeAStar%1000)+" ms"+RESET);
+    }
+
 
     public static void test(String map) throws FileNotFoundException, IOException{
         final GraphReader reader = new BinaryGraphReader(
@@ -145,9 +147,20 @@ public class Launch {
                 BellmanFordAlgorithm bellman= new BellmanFordAlgorithm(data);
                 AStarAlgorithm aStar = new AStarAlgorithm(data);
 
+                long timeDij=new Date().getTime();
                 ShortestPathSolution pathDij = djikstra.run();
+                timeDij=new Date().getTime()-timeDij;
+                long timeBel=new Date().getTime();
                 ShortestPathSolution pathBel = bellman.run();
+                timeBel=new Date().getTime()-timeBel;
+                long timeAStar= new Date().getTime();
                 ShortestPathSolution pathAstar = aStar.run();
+                timeAStar = new Date().getTime()-timeAStar;
+
+                System.out.println(RED+"Les temps d'éxecution sont:");
+                System.out.println("Bellman: "+timeBel/1000+"s, "+(int) (timeBel%1000)+" ms");
+                System.out.println("    Dij: "+timeDij/1000+"s, "+(int)(timeDij%1000)+" ms");
+                System.out.println("    A start: "+timeAStar/1000+"s, "+(int)(timeAStar%1000)+" ms"+RESET);
 
                 
                 
