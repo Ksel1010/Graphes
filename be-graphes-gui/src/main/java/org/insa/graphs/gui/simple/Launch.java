@@ -82,13 +82,13 @@ public class Launch {
         //TestDuree(carteFrance);
        // String carteCarreDense="/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre-dense.mapgr";
        // TestDuree(carteCarreDense);
-       // String carteToulouse="/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+       String carteToulouse="/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
        // TestDuree(carteToulouse);
        // String carteBordeaux="/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/bordeaux.mapgr";
        // TestDuree(carteBordeaux);
 
        String carteFrance="/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/france.mapgr";
-       cheminLong(carteFrance);
+       cheminLong(carteToulouse);
          /** Tests rapides sur petites cartes */
         /*
         final String folderMapsPath = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
@@ -162,15 +162,19 @@ public class Launch {
                     for(int i=0; i<pathAstar.getPath().size();i+=pathAstar.getPath().size()/10){
                         debutPortion=finPortion;
                         if((i+pathAstar.getPath().size()/10)>=(pathAstar.getPath().size()-1)){
+                            i=pathAstar.getPath().size();
                             finPortion=destination;
                         }else{
-                            i+=pathAstar.getPath().size()/10;
-                            finPortion=pathAstar.getPath().getArcs().get(i).getDestination();
+                            finPortion=pathAstar.getPath().getArcs().get(i+pathAstar.getPath().size()/10).getDestination();
                         }
                         ShortestPathData dataPotrtion = new ShortestPathData(graph, debutPortion, finPortion, inspector);
                         ShortestPathSolution pathPortionAstar=new AStarAlgorithm(dataPotrtion).run();
-                        lengthPortionAstar+=pathPortionAstar.getPath().getLength();
-
+                        if(pathPortionAstar.getPath()==null){
+                            System.out.println("srs"+debutPortion.getId()+" dest "+finPortion.getId());
+                        }
+                        else{
+                            lengthPortionAstar+=pathPortionAstar.getPath().getLength();
+                        }
                     }
                     System.out.println("La distance en:\n"+RED+"A star est:\t"+pathAstar.getPath().getLength());
                     System.out.println("A star portion est:\t"+lengthPortionAstar+RESET);
@@ -182,14 +186,19 @@ public class Launch {
                     for(int i=0; i<pathDij.getPath().size();i+=pathDij.getPath().size()/10){
                         debutPortion=finPortion;
                         if((i+pathDij.getPath().size()/10)>=(pathDij.getPath().size()-1)){
+                            i=pathDij.getPath().size();
                             finPortion=destination;
                         }else{
-                            i+=pathDij.getPath().size()/10;
-                            finPortion=pathDij.getPath().getArcs().get(i).getDestination();
+                            finPortion=pathDij.getPath().getArcs().get(i+pathDij.getPath().size()/10).getDestination();
                         }
                         ShortestPathData dataPotrtion = new ShortestPathData(graph, debutPortion, finPortion, inspector);
                         ShortestPathSolution pathPorionDij=new DijkstraAlgorithm(dataPotrtion).run();
-                        lengthPortionDij+=pathPorionDij.getPath().getLength();
+                        if(pathPorionDij.getPath()==null){
+                            System.out.println("srs"+debutPortion.getId()+" dest "+finPortion.getId());
+                        }
+                        else{
+                            lengthPortionDij+=pathPorionDij.getPath().getLength();
+                        }
 
                     }
                     System.out.println("La distance en:\n"+RED+"Dij est:\t"+pathDij.getPath().getLength());
@@ -204,14 +213,19 @@ public class Launch {
                     for(int i=0; i<pathAstar.getPath().size();i+=pathAstar.getPath().size()/10){
                         debutPortion=finPortion;
                         if((i+pathAstar.getPath().size()/10)>=(pathAstar.getPath().size()-1)){
+                            i=pathAstar.getPath().size();
                             finPortion=destination;
                         }else{
-                            i+=pathAstar.getPath().size()/10;
-                            finPortion=pathAstar.getPath().getArcs().get(i).getDestination();
+                            finPortion=pathAstar.getPath().getArcs().get(i+pathAstar.getPath().size()/10).getDestination();
                         }
                         ShortestPathData dataPotrtion = new ShortestPathData(graph, debutPortion, finPortion, inspector);
                         ShortestPathSolution pathPortionAstar=new AStarAlgorithm(dataPotrtion).run();
-                        timePortionAstar+=pathPortionAstar.getPath().getMinimumTravelTime();
+                        if(pathPortionAstar.getPath()==null){
+                            System.out.println("srs"+debutPortion.getId()+" dest "+finPortion.getId());
+                        }
+                        else{
+                            timePortionAstar+=pathPortionAstar.getPath().getMinimumTravelTime();
+                        }
                     
                     }
                     System.out.println("La distance en:\n"+RED+"A star est\t:"+pathAstar.getPath().getMinimumTravelTime());
@@ -224,15 +238,19 @@ public class Launch {
                     for(int i=0; i<pathDij.getPath().size();i+=pathDij.getPath().size()/10){
                         debutPortion=finPortion;
                         if((i+pathDij.getPath().size()/10)>=(pathDij.getPath().size()-1)){
+                            i=pathDij.getPath().size();
                             finPortion=destination;
                         }else{
-                            i+=pathDij.getPath().size()/10;
-                            finPortion=pathDij.getPath().getArcs().get(i).getDestination();
+                            finPortion=pathDij.getPath().getArcs().get(i+pathDij.getPath().size()/10).getDestination();
                         }
                         ShortestPathData dataPotrtion = new ShortestPathData(graph, debutPortion, finPortion, inspector);
                         ShortestPathSolution pathPorionDij=new DijkstraAlgorithm(dataPotrtion).run();
-                        timePortionDij+=pathPorionDij.getPath().getMinimumTravelTime();
-                    
+                        if(debutPortion.getId() ==finPortion.getId()){
+                            System.out.println("srs"+debutPortion.getId()+" dest "+finPortion.getId());
+                        }
+                        else{
+                            timePortionDij+=pathPorionDij.getPath().getMinimumTravelTime();
+                        }
                     }
                     System.out.println("Le temps en :\n"+RED+"Dij est:\t"+pathDij.getPath().getMinimumTravelTime());
                     System.out.println("Dij portion est:"+timePortionDij+RESET);
